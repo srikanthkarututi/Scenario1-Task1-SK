@@ -1,5 +1,1 @@
-
-
-hey we will be working on git for practise
-
-
+git for practise we will be working 
