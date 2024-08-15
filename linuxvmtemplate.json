@@ -1,0 +1,238 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string",
+      "defaultValue": "myLinuxVM"
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS1_v2"
+    },
+    "adminUsername": {
+      "type": "string",
+      "defaultValue": "azureuser"
+    },
+    "adminPassword": {
+      "type": "securestring"
+    },
+    "managedIdentityName": {
+      "type": "string",
+      "defaultValue": "srikanth-MI-test"
+    },
+    "scriptStorageAccountName": {
+      "type": "string",
+      "defaultValue": "demostorage6767"
+    },
+    "scriptContainerName": {
+      "type": "string",
+      "defaultValue": "containerfortest677"
+    },
+    "scriptFileName": {
+      "type": "string",
+      "defaultValue": "linuxvmlogs.sh"
+    },
+    "userManagedIdentityObjectID": {
+      "type": "string",
+      "defaultValue": "b5e3fded-28ce-4ec7-827a-f892cc6e0ed4"
+    },
+    "fileUris": {
+      "type": "array"
+    },
+    "commandToExecute": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "location": "[resourceGroup().location]",
+    "managedIdentityId": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]",
+    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', 'myVnet')]",
+    "subnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'myVnet', 'default')]",
+    "nicId": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vmName'), 'NIC'))]",
+    "publicIpId": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), 'PublicIP'))]",
+    "nsgId": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('vmName'), 'NSG'))]",
+    "storageAccountBlobUri": "[concat('https://', parameters('scriptStorageAccountName'), '.blob.core.windows.net/', parameters('scriptContainerName'), '/', parameters('scriptFileName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2021-03-01",
+      "name": "[concat(parameters('vmName'), 'PublicIP')]",
+      "location": "[variables('location')]",
+      "tags": {
+        "environment": "test"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2021-03-01",
+      "name": "myVnet",
+      "location": "[variables('location')]",
+      "tags": {
+        "environment": "test"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.0.0.0/16"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "default",
+            "properties": {
+              "addressPrefix": "10.0.1.0/24"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2021-03-01",
+      "name": "[concat(parameters('vmName'), 'NIC')]",
+      "location": "[variables('location')]",
+      "tags": {
+        "environment": "test"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), 'PublicIP'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', 'myVnet')]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[variables('publicIpId')]"
+              },
+              "subnet": {
+                "id": "[variables('subnetId')]"
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[variables('nsgId')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2021-03-01",
+      "name": "[concat(parameters('vmName'), 'NSG')]",
+      "location": "[variables('location')]",
+      "tags": {
+        "environment": "test"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "Allow-SSH",
+            "properties": {
+              "priority": 1000,
+              "protocol": "*",
+              "access": "Allow",
+              "direction": "Inbound",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2018-11-30",
+      "name": "[parameters('managedIdentityName')]",
+      "location": "[variables('location')]",
+      "tags": {
+        "environment": "test"
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2021-03-01",
+      "name": "[parameters('vmName')]",
+      "location": "[variables('location')]",
+      "tags": {
+        "PolicyTagged": "True"
+      },
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[variables('managedIdentityId')]": {}
+        }
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('vmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": false
+          }
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "18.04-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS"
+            }
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[variables('nicId')]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2021-03-01",
+      "name": "[concat(parameters('vmName'), '/customScriptExtension')]",
+      "location": "[variables('location')]",
+      "tags": {
+        "environment": "test"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.1",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": "[parameters('fileUris')]"
+        },
+        "protectedSettings": {
+          "commandToExecute": "[parameters('commandToExecute')]",
+          "managedIdentity": {
+            "objectId": "[parameters('userManagedIdentityObjectID')]"
+          }
+        }
+      }
+    }
+  ]
+}

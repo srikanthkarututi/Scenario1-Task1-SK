@@ -1,0 +1,29 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "resources": [
+      {
+        "type": "Microsoft.Authorization/policyAssignments",
+        "apiVersion": "2021-06-01",
+        "name": "require-tag-on-vm-deployments-assignment",
+        "properties": {
+          "scope": "/subscriptions/46187496-2b51-4828-9e72-73702efdfca8/resourceGroups/rg-srikanth-c2s",
+          "policyDefinitionId": "/subscriptions/46187496-2b51-4828-9e72-73702efdfca8/providers/Microsoft.Authorization/policyDefinitions/require-tag-on-vm-deployments",
+          "description": "This policy assignment requires a specific tag on all VM deployments.",
+          "displayName": "Require tag on VM deployments"
+        }
+      },
+      {
+        "type": "Microsoft.Authorization/policyAssignments",
+        "apiVersion": "2021-06-01",
+        "name": "deny-f-series-vm-deployments-assignment",
+        "properties": {
+          "scope": "/subscriptions/46187496-2b51-4828-9e72-73702efdfca8/resourceGroups/rg-srikanth-c2s",
+          "policyDefinitionId": "/subscriptions/46187496-2b51-4828-9e72-73702efdfca8/providers/Microsoft.Authorization/policyDefinitions/deny-f-series-vm-deployments",
+          "description": "This policy assignment denies the usage of f-series VM deployments.",
+          "displayName": "Deny f-series VM deployments"
+        }
+      }
+    ]
+  }
+  

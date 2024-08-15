@@ -1,0 +1,102 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "managedIdentityName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the managed identity"
+        }
+      },
+      "subscriptionId": {
+        "type": "string",
+        "metadata": {
+          "description": "Azure subscription ID"
+        }
+      },
+      "storageAccountName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the storage account"
+        }
+      },
+      "resourceGroupName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the resource group"
+        }
+      },
+      "keyVaultName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the Key Vault"
+        }
+      },
+      "webAppName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name of the Web App"
+        }
+      }
+    },
+    "variables": {
+      "managedIdentityId": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]",
+      "resourceGroupId": "[resourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]",
+      "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+      "keyVaultId": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+    },
+    "resources": [
+      {
+        "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+        "apiVersion": "2018-11-30",
+        "name": "[parameters('managedIdentityName')]",
+        "location": "[resourceGroup().location]"
+      },
+      {
+        "type": "Microsoft.Authorization/roleAssignments",
+        "apiVersion": "2020-04-01-preview",
+        "name": "[guid(parameters('resourceGroupName'), parameters('managedIdentityName'), 'vmAdminLoginRole')]",
+        "properties": {
+          "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '1c0163c0-47e6-4577-8991-ea5c82e286e4')]",
+          "principalId": "[reference(variables('managedIdentityId'), '2018-11-30').principalId]"
+        }
+      },
+      {
+        "type": "Microsoft.Authorization/roleAssignments",
+        "apiVersion": "2020-04-01-preview",
+        "name": "[guid(parameters('storageAccountName'), parameters('managedIdentityName'), 'storageBlobDataContributorRole')]",
+        "properties": {
+          "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+          "principalId": "[reference(variables('managedIdentityId'), '2018-11-30').principalId]"
+        }
+      },
+      {
+        "type": "Microsoft.Authorization/roleAssignments",
+        "apiVersion": "2020-04-01-preview",
+        "name": "[guid(parameters('storageAccountName'), parameters('managedIdentityName'), 'storageBlobDataReaderRole')]",
+        "properties": {
+          "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1')]",
+          "principalId": "[reference(variables('managedIdentityId'), '2018-11-30').principalId]"
+        }
+      },
+      {
+        "type": "Microsoft.Authorization/roleAssignments",
+        "apiVersion": "2020-04-01-preview",
+        "name": "[guid(parameters('keyVaultName'), parameters('managedIdentityName'), 'keyVaultContributorRole')]",
+        "properties": {
+          "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f25e0fa2-a7c8-4377-a976-54943a77a395')]",
+          "principalId": "[reference(variables('managedIdentityId'), '2018-11-30').principalId]"
+        }
+      },
+      {
+        "type": "Microsoft.Authorization/roleAssignments",
+        "apiVersion": "2020-04-01-preview",
+        "name": "[guid(parameters('webAppName'), parameters('managedIdentityName'), 'webPlanContributorRole')]",
+        "properties": {
+          "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '2cc479cb-7b4d-49a8-b449-8c00fd0f0a4b')]",
+          "principalId": "[reference(variables('managedIdentityId'), '2018-11-30').principalId]"
+        }
+      }
+    ]
+  }
+  

@@ -1,0 +1,119 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "webAppName": {
+      "type": "string",
+      "defaultValue": "TestWebApp236"
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "defaultValue": "myAppServicePlan"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "eastus"
+    },
+    "zipFileUrl": {
+      "type": "string",
+      "defaultValue": "https://demostorage6767.blob.core.windows.net/containerfortest677/epic_web_publish.zip"
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "defaultValue": "rg-srikanth-c2s"
+    },
+    "managedIdentityName": {
+      "type": "string",
+      "defaultValue": "srikanth-MI-test"
+    },
+    "scriptFileUrl": {
+      "type": "string",
+      "defaultValue": "https://demostorage6767.blob.core.windows.net/containerfortest677/deploy-zip.ps1?sp=r&st=2024-08-06T16:27:15Z&se=2024-08-13T00:27:15Z&sv=2022-11-02&sr=b&sig=gl2PeSoBlhl%2FSkY7o38EncGareNFLHpMuu0h3ESONCg%3D"
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "S1"
+    }
+  },
+  "variables": {
+    "managedIdentityId": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "apiVersion": "2018-11-30",
+      "name": "[parameters('managedIdentityName')]",
+      "location": "[parameters('location')]"
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2021-01-15",
+      "name": "[parameters('appServicePlanName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[parameters('sku')]",
+        "tier": "[if(contains(parameters('sku'), 'F'), 'Free', if(contains(parameters('sku'), 'B'), 'Basic', if(contains(parameters('sku'), 'S'), 'Standard', if(contains(parameters('sku'), 'P'), 'PremiumV2', 'Shared'))))]",
+        "size": "[parameters('sku')]",
+        "capacity": 1
+      },
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2021-01-15",
+      "name": "[parameters('webAppName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      ],
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[variables('managedIdentityId')]": {}
+        }
+      },
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2020-10-01",
+      "name": "AppServicedeploytheScript",
+      "location": "[parameters('location')]",
+      "kind": "AzurePowerShell",
+      "properties": {
+        "forceUpdateTag": "1",
+        "azPowerShellVersion": "5.0",
+        "timeout": "PT1H",
+        "cleanUpPreference": "Always",
+        "retentionInterval": "P1D",
+        "primaryScriptUri": "[parameters('scriptFileUrl')]",
+        "identity": {
+          "type": "UserAssigned",
+          "userAssignedIdentities": {
+            "[variables('managedIdentityId')]": {}
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "webAppName": {
+      "type": "string",
+      "value": "[parameters('webAppName')]"
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "value": "[parameters('appServicePlanName')]"
+    },
+    "webAppUrl": {
+      "type": "string",
+      "value": "[concat('https://', parameters('webAppName'), '.azurewebsites.net')]"
+    },
+    "managedIdentityId": {
+      "type": "string",
+      "value": "[variables('managedIdentityId')]"
+    }
+  }
+}

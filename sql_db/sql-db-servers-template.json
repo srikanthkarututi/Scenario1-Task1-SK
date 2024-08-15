@@ -1,0 +1,72 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subscriptionId": {
+      "type": "string",
+      "defaultValue": "46187496-2b51-4828-9e72-73702efdfca8",
+      "metadata": {
+        "description": "Azure subscription ID"
+      }
+    },
+    "sqlServerName": {
+      "type": "string",
+      "defaultValue": "sk-sqlserverfortest",
+      "metadata": {
+        "description": "Name of the SQL Server"
+      }
+    },
+    "sqlDatabaseName": {
+      "type": "string",
+      "defaultValue": "sk-sqldbfortest",
+      "metadata": {
+        "description": "Name of the SQL Database"
+      }
+    },
+    "adminLogin": {
+      "type": "string",
+      "defaultValue": "sqladminlogin",
+      "metadata": {
+        "description": "Admin login for the SQL Server"
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "defaultValue": "Srikku@6777",
+      "metadata": {
+        "description": "Admin password for the SQL Server"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "westus",
+      "metadata": {
+        "description": "Location of the resources"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Sql/servers",
+      "apiVersion": "2021-02-01-preview",
+      "name": "[parameters('sqlServerName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "administratorLogin": "[parameters('adminLogin')]",
+        "administratorLoginPassword": "[parameters('adminPassword')]"
+      }
+    },
+    {
+      "type": "Microsoft.Sql/servers/databases",
+      "apiVersion": "2021-02-01-preview",
+      "name": "[concat(parameters('sqlServerName'), '/', parameters('sqlDatabaseName'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "createMode": "Default"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "managedIdentityName": {
+        "value": "srikanth-MI-test"
+      },
+      "subscriptionId": {
+        "value": "46187496-2b51-4828-9e72-73702efdfca8"
+      },
+      "storageAccountName": {
+        "value": "demostorage6767"
+      },
+      "resourceGroupName": {
+        "value": "rg-srikanth-c2s"
+      },
+      "keyVaultName": {
+        "value": "keyvault67007"
+      },
+      "webAppName": {
+        "value": "TestWebApp236"
+      }
+    }
+  }
+  

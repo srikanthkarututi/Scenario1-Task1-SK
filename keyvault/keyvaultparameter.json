@@ -1,0 +1,68 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "keyvault67007"  
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "sku": {
+            "value": "standard"
+        },
+        "accessPolicies": {
+            "value": [
+                {
+                    "tenantId": "d390bfc9-f000-4e7c-a95c-0e1734cd35a6",
+                    "objectId": "b5e3fded-28ce-4ec7-827a-f892cc6e0ed4",
+                    "permissions": {
+                        "keys": ["get", "list", "create", "delete", "recover", "backup", "restore"],
+                        "secrets": ["get", "list", "set", "delete", "recover", "backup", "restore"],
+                        "certificates": ["get", "list", "delete", "create", "import", "update", "managecontacts", "getissuers", "listissuers", "setissuers", "deleteissuers"]
+                    }
+                }
+            ]
+        },
+        "tenant": {
+            "value": "d390bfc9-f000-4e7c-a95c-0e1734cd35a6"
+        },
+        "enabledForDeployment": {
+            "value": true
+        },
+        "enabledForTemplateDeployment": {
+            "value": true
+        },
+        "enabledForDiskEncryption": {
+            "value": false
+        },
+        "enableRbacAuthorization": {
+            "value": true
+        },
+        "publicNetworkAccess": {
+            "value": "Enabled"
+        },
+        "enableSoftDelete": {
+            "value": true
+        },
+        "softDeleteRetentionInDays": {
+            "value": 7
+        },
+        "networkAcls": {
+            "value": {}
+        },
+        "secrets": {
+            "value": [
+                {
+                    "name": "adminPassword",
+                    "value": "Myvmlogin@234"
+                },
+                {
+                    "name": "subscriptionId",
+                    "value": "46187496-2b51-4828-9e72-73702efdfca8"
+                }
+            ]
+        }
+    }
+}
+

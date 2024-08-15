@@ -1,0 +1,57 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subscriptionId": {
+      "type": "string",
+      "defaultValue": "46187496-2b51-4828-9e72-73702efdfca8",
+      "metadata": {
+        "description": "Azure subscription ID"
+      }
+    },
+    "managedIdentityName": {
+      "type": "string",
+      "defaultValue": "srikanth-mi-db",
+      "metadata": {
+        "description": "Name of the existing managed identity"
+      }
+    },
+    "managedIdentityResourceGroup": {
+      "type": "string",
+      "defaultValue": "rg-srikanth-db",
+      "metadata": {
+        "description": "Resource group of the managed identity"
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "defaultValue": "demostorage6767",
+      "metadata": {
+        "description": "Name of the storage account"
+      }
+    },
+    "storageAccountResourceGroup": {
+      "type": "string",
+      "defaultValue": "rg-srikanth-c2s",
+      "metadata": {
+        "description": "Resource group of the storage account"
+      }
+    }
+  },
+  "variables": {
+    "managedIdentityId": "[resourceId(parameters('subscriptionId'), parameters('managedIdentityResourceGroup'), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]",
+    "storageAccountId": "[resourceId(parameters('subscriptionId'), parameters('storageAccountResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2020-04-01-preview",
+      "name": "[guid(variables('storageAccountId'), parameters('managedIdentityName'), 'storageBlobDataContributorRole')]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId(parameters('subscriptionId'), 'Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+        "principalId": "[reference(variables('managedIdentityId'), '2018-11-30').principalId]",
+        "scope": "/subscriptions/46187496-2b51-4828-9e72-73702efdfca8/resourcegroups/rg-srikanth-c2s"
+      }
+    }
+  ]
+}

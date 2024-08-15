@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "vmName": {
+        "value": "myLinuxVM"
+      },
+      "vmSize": {
+        "value": "Standard_DS1_v2"
+      },
+      "adminUsername": {
+        "value": "azureuser"
+      },
+      "adminPassword": {
+        "value": "Myvmlogin@234"  
+      },
+      "managedIdentityName": {
+        "value": "srikanth-MI-test"
+      },
+      "scriptStorageAccountName": {
+        "value": "demostorage6767"
+      },
+      "scriptContainerName": {
+        "value": "containerfortest677"
+      },
+      "scriptFileName": {
+        "value": "linuxvmlogs.sh"  
+      },
+      "userManagedIdentityObjectID": {
+        "value": "b5e3fded-28ce-4ec7-827a-f892cc6e0ed4"
+      },
+      "commandToExecute": {
+        "value": "bash linuxvmlogs.sh"
+      },
+      "fileUris": {
+        "value": [
+          "https://demostorage6767.blob.core.windows.net/containerfortest677/linuxvmlogs.sh"
+        ]
+      }
+    }
+  }
+  
+  
+  
+  
+  
+  
+  

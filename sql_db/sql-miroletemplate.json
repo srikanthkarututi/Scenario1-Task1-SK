@@ -1,0 +1,66 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subscriptionId": {
+      "type": "string",
+      "defaultValue": "46187496-2b51-4828-9e72-73702efdfca8",
+      "metadata": {
+        "description": "Azure subscription ID"
+      }
+    },
+    "managedIdentityName": {
+      "type": "string",
+      "defaultValue": "srikanth-mi-db",
+      "metadata": {
+        "description": "Name of the existing managed identity"
+      }
+    },
+    "managedIdentityResourceGroup": {
+      "type": "string",
+      "defaultValue": "rg-srikanth-db",
+      "metadata": {
+        "description": "Resource group of the managed identity"
+      }
+    },
+    "sqlServerName": {
+      "type": "string",
+      "defaultValue": "sk-sqlserverfortest",
+      "metadata": {
+        "description": "Name of the SQL Server"
+      }
+    },
+    "sqlDatabaseName": {
+      "type": "string",
+      "defaultValue": "sk-sqldbfortest",
+      "metadata": {
+        "description": "Name of the SQL Database"
+      }
+    }
+  },
+  "variables": {
+    "managedIdentityId": "[resourceId(parameters('subscriptionId'), parameters('managedIdentityResourceGroup'), 'Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]",
+    "sqlServerScope": "/subscriptions/46187496-2b51-4828-9e72-73702efdfca8/resourceGroups/rg-srikanth-db/providers/Microsoft.Sql/servers/sk-sqlserverfortest",
+    "sqlDatabaseScope": "/subscriptions/46187496-2b51-4828-9e72-73702efdfca8/resourceGroups/rg-srikanth-db/providers/Microsoft.Sql/servers/sk-sqlserverfortest"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2020-04-01-preview",
+      "name": "[guid(variables('sqlServerScope'), parameters('managedIdentityName'), 'sqlServerContributorRole')]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId(parameters('subscriptionId'), 'Microsoft.Authorization/roleDefinitions', '6d8ee4ec-f05a-4a1d-8b00-a9b17e38b437')]",
+        "principalId": "[reference(variables('managedIdentityId'), '2018-11-30').principalId]"
+      }
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2020-04-01-preview",
+      "name": "[guid(variables('sqlDatabaseScope'), parameters('managedIdentityName'), 'sqlDBContributorRole')]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId(parameters('subscriptionId'), 'Microsoft.Authorization/roleDefinitions', '9b7fa17d-e63e-47b0-bb0a-15c516ac86ec')]",
+        "principalId": "[reference(variables('managedIdentityId'), '2018-11-30').principalId]"
+      }
+    }
+  ]
+}

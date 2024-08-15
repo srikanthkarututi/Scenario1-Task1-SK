@@ -1,0 +1,53 @@
+{
+  "$schema": "https://schema.management.azure.com/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string",
+      "defaultValue": "myWindowsVM",
+      "metadata": {
+        "description": "Name of the virtual machine."
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "defaultValue": "demostorage6767",
+      "metadata": {
+        "description": "Name of the storage account."
+      }
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "defaultValue": "rg-srikanth-c2s",
+      "metadata": {
+        "description": "Name of the resource group."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "name": "[concat('roLock-', parameters('storageAccountName'))]",
+      "properties": {
+        "level": "ReadOnly",
+        "notes": "Read-only lock applied to storage account"
+      },
+      "scope": "[resourceId(parameters('resourceGroupName'), 'Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+    },
+    {
+      "type": "Microsoft.Authorization/locks",
+      "apiVersion": "2020-05-01",
+      "name": "[concat('dlLock-', parameters('vmName'))]",
+      "properties": {
+        "level": "CanNotDelete",
+        "notes": "Delete lock applied to VM"
+      },
+      "scope": "[resourceId(parameters('resourceGroupName'), 'Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+    }
+  ]
+}
+
+
+
+  

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sqlServerName": {
+      "type": "string",
+      "defaultValue": "sk-sqlserverfortest",
+      "metadata": {
+        "description": "The name of the SQL Server."
+      }
+    },
+    "sqlDatabaseName": {
+      "type": "string",
+      "defaultValue": "sk-sqldbfortest",
+      "metadata": {
+        "description": "The name of the SQL Database."
+      }
+    },
+    "sqlAdminUsername": {
+      "type": "string",
+      "defaultValue": "sqladminlogin",
+      "metadata": {
+        "description": "The SQL Server administrator username."
+      }
+    },
+    "sqlAdminPassword": {
+      "type": "securestring",
+      "defaultValue": "Srikku@6777",
+      "metadata": {
+        "description": "The SQL Server administrator password."
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "defaultValue": "demostorage6767",
+      "metadata": {
+        "description": "The name of the Storage Account containing the script."
+      }
+    },
+    "storageContainerName": {
+      "type": "string",
+      "defaultValue": "containerfortest677",
+      "metadata": {
+        "description": "The name of the Storage Container containing the script."
+      }
+    },
+    "scriptFileName": {
+      "type": "string",
+      "defaultValue": "sql_create_table.ps1",
+      "metadata": {
+        "description": "The name of the PowerShell script file in the Storage Container."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2020-10-01",
+      "name": "executeCreateTableScript",
+      "kind": "AzurePowerShell",
+      "location": "[resourceGroup().location]",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[resourceId('rg-srikanth-db', 'Microsoft.ManagedIdentity/userAssignedIdentities', 'srikanth-mi-db')]": {}
+        }
+      },
+      "properties": {
+        "primaryScriptUri": "https://demostorage6767.blob.core.windows.net/containerfortest677/sql_create_table.ps1?sp=rw&st=2024-08-09T21:43:36Z&se=2024-08-17T05:43:36Z&sv=2022-11-02&sr=b&sig=8TPy1CEJarU%2Bj4IOoRr2aiP9YsaPBZM2MRRLc7LK8CI%3D",
+        "timeout": "PT30M",
+        "cleanupPreference": "OnSuccess",
+        "retentionInterval": "P1D",
+        "azPowerShellVersion": "6.2.1",
+        "azurePowerShellVersion": "5.7.0"
+      }
+    }
+  ]
+}

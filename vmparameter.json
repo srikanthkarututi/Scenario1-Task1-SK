@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "vmName": {
+        "value": "myWindowsVM"
+      },
+      "vmSize": {
+        "value": "Standard_DS1_v2"
+      },
+      "adminUsername": {
+        "value": "azureuser"
+      },
+      "adminPassword": {
+        "value": "Myvmlogin@234"
+      },
+      "managedIdentityName": {
+        "value": "srikanth-MI-test"
+      },
+      "scriptStorageAccountName": {
+        "value": "demostorage6767"
+      },
+      "scriptContainerName": {
+        "value": "containerfortest677"
+      },
+      "scriptFileName": {
+        "value": "cpulogs.ps1"
+      },
+      "userManagedIdentityObjectID": {
+        "value": "b5e3fded-28ce-4ec7-827a-f892cc6e0ed4"
+      },
+      "commandToExecute": {
+        "value": "powershell.exe -ExecutionPolicy Unrestricted -File cpulogs.ps1"
+      },
+      "fileUris": {
+        "value": [
+          "https://demostorage6767.blob.core.windows.net/containerfortest677/cpulogs.ps1"
+        ]
+      }
+    }
+  }
+  

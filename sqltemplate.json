@@ -1,0 +1,61 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serverName": {
+      "type": "string",
+      "defaultValue": "srikanthsqlserver"
+    },
+    "databaseName": {
+      "type": "string",
+      "defaultValue": "srikanthsqldb"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "westus"
+    },
+    "managedIdentityName": {
+      "type": "string",
+      "defaultValue": "srikanth-mi-db"
+    },
+    "resourceGroupName": {
+      "type": "string",
+      "defaultValue": "rg-srikanth-db"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Sql/servers",
+      "apiVersion": "2021-02-01-preview",
+      "name": "[parameters('serverName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "administratorLogin": "sqladmin",
+        "administratorLoginPassword": "P@ssw0rd!"
+      },
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('managedIdentityName'))]": {}
+        }
+      },
+      "resources": [
+        {
+          "type": "databases",
+          "apiVersion": "2021-02-01-preview",
+          "name": "[parameters('databaseName')]",
+          "location": "[parameters('location')]",
+          "properties": {
+            "collation": "SQL_Latin1_General_CP1_CI_AS",
+            "maxSizeBytes": "2147483648",
+            "sampleName": "AdventureWorksLT",
+            "zoneRedundant": false
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', parameters('serverName'))]"
+          ]
+        }
+      ]
+    }
+  ]
+}
