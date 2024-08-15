@@ -1,1 +1,1 @@
-git for practise we will be working with new develop branch to resolve the issue
+git for practise we will be working with new develop branch to resolve the issue and work together
