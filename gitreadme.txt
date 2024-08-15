@@ -1,1 +1,3 @@
-git for practise we will be working with new develop branch to resolve the issue and work together
+git
+
+works good with github
