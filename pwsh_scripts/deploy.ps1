@@ -11,6 +11,7 @@ az deployment group create --resource-group rg-srikanth-db --template-file mitem
 
 #az storage blob upload --account-name demostorage6767 --container-name containerfortest677 --name deploy-zip.ps1 --file /Users/srikku/Task_1/pwsh_scripts/deploy-zip.ps1
 #az storage blob upload --account-name demostorage6767 --container-name containerfortest677 --name deploy-zip.ps1 --file /Users/srikku/Task_1/pwsh_scripts/deploy-zip.ps1 --overwrite
+#az storage blob delete --account-name demostorage6767 --container-name containerfortest677 --name testvm_port_ping.ps1  
 
 az storage blob upload --account-name demostorage6767 --container-name containerfortest677 --name create_patients_table.sql --file /Users/srikku/Task_1/sql_db/create_table.sql
 
