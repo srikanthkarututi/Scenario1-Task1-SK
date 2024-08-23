@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-08-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deploymentScripts",
+      "apiVersion": "2020-10-01",
+      "name": "shutdown-vms-script",
+      "kind": "AzurePowerShell",
+      "location": "[resourceGroup().location]",
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "/subscriptions/46187496-2b51-4828-9e72-73702efdfca8/resourceGroups/rg-srikanth-c2s/providers/Microsoft.ManagedIdentity/userAssignedIdentities/srikanth-MI-test": {}
+        }
+      },
+      "properties": {
+        "forceUpdateTag": "v1.0.0",  
+        "azPowerShellVersion": "7.1",
+        "primaryScriptUri": "https://demostorage6767.blob.core.windows.net/containerfortest677/shutdown-vms.ps1?sp=r&st=2024-08-23T20:28:30Z&se=2024-08-31T04:28:30Z&sv=2022-11-02&sr=b&sig=froVVgNBMkBgho7NobAZN5e90D7tsYuijAag4yRCKb8%3D",
+        "arguments": "",
+        "timeout": "PT1H",
+        "cleanupPreference": "Always",
+        "retentionInterval": "P1D"
+      }
+    }
+  ]
+}
